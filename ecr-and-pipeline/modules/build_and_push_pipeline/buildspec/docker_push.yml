@@ -1,0 +1,20 @@
+version: 0.2
+phases:
+  install:
+    commands:
+    - echo "[INFO] Installing jq"
+    - curl -s -qL -o jq https://stedolan.github.io/jq/download/linux64/jq && chmod +x jq && mv jq /usr/bin/
+  pre_build:
+    commands:
+    - echo "[INFO] Assuming Docker-Build IAM role"
+    - DOCKER_BUILD_ROLE=$(aws sts assume-role --role-arn $DOCKER_BUILD_ROLE_ARN --role-session-name codebuild_deploy)
+    - export AWS_ACCESS_KEY_ID=$(echo $DOCKER_BUILD_ROLE | jq -r '.Credentials.AccessKeyId')
+    - export AWS_SECRET_ACCESS_KEY=$(echo $DOCKER_BUILD_ROLE | jq -r '.Credentials.SecretAccessKey')
+    - export AWS_SESSION_TOKEN=$(echo $DOCKER_BUILD_ROLE | jq -r '.Credentials.SessionToken')
+  push:
+    commands:
+    - echo "[INFO] Pushing Docker Image to ECR"
+    - docker build -t $ECR_URL/$IMAGE_NAME:v$CODEBUILD_BUILD_NUMBER . 
+  post_build:
+    commands:
+    - echo "[INFO] Docker Build Complete"

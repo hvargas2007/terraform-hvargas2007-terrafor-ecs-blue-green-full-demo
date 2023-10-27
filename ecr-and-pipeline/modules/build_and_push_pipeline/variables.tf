@@ -1,0 +1,11 @@
+variable "codepipeline_account_id" {}
+variable "name_prefix" {}
+variable "codepipeline_role" {}
+variable "codebuild_role" {}
+variable "terrraform_apply_role" {}
+variable "code_connection" {}
+variable "repository_id" {}
+variable "repository_branch" {}
+variable "terraform_version" {}
+variable "compute_type" {}
+variable "aws_profile" {}
